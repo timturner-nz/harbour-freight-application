@@ -1,0 +1,2 @@
+# Business context — Enquiry Tracker
+
