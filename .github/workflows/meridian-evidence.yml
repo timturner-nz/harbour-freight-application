@@ -1,0 +1,146 @@
+# Report acceptance-check evidence to Meridian from a hosted runner.
+#
+# Meridian's inbound webhook binds to loopback on a developer's machine, so a
+# GitHub-hosted runner has no route to it. This workflow inverts the direction:
+# the job writes a file, uploads it as an artifact named `meridian-evidence`,
+# and Meridian downloads it through the GitHub API on its next Actions poll.
+#
+# No secret, no ingress, no network path back to anybody's laptop.
+#
+# To use this:
+#   1. Replace the example results below with your real ones, or generate the
+#      file from your test reporter — see "Generating the file" at the bottom.
+#   2. In Meridian: Settings -> Integrations -> GitHub Actions, turn on
+#      "Poll GitHub Actions" and "Ingest evidence from CI artifacts", and set a
+#      Personal Access Token with `actions:read`.
+#
+# Things that will silently do nothing if you get them wrong:
+#   - The artifact name must be exactly `meridian-evidence`.
+#   - `statement` must match the acceptance check's statement EXACTLY. Matching
+#     is exact by design; a near miss is reported, never guessed at.
+#   - Evidence from a forked pull request is refused. A fork run executes the
+#     contributor's code and can upload any artifact it likes.
+
+name: Meridian evidence
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # A commit whose Meridian-Req line git cannot parse is attributed to
+  # nothing, and nothing says so. This fails the pull request and lists the
+  # shas. Merge commits are skipped on purpose: a merge of the base branch
+  # carries no trailer, because with one every file it brought in joins the
+  # card's footprint. Only the PR's own range is checked, never history.
+  trailers:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Every commit carries a parsed Meridian-Req or Meridian-Phase line
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          missing=""
+          for sha in $(git rev-list --no-merges "$BASE_SHA..$HEAD_SHA"); do
+            if ! git log -1 --format=%B "$sha" | git interpret-trailers --only-trailers --only-input | grep -qiE '^Meridian-(Req|Phase):'; then
+              missing="$missing $sha"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            echo "These commits have no Meridian-Req or Meridian-Phase line that git parses:"
+            for sha in $missing; do git log -1 --format='  %h %s' "$sha"; done
+            echo "The line must be in the last block of the message, with no blank line above Co-Authored-By."
+            echo "Fix it forward with a new commit; do not amend a pushed one."
+            exit 1
+          fi
+
+  acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Your real test run goes here. Keep `id` and `continue-on-error` so the
+      # evidence step can report a failure as a failure rather than being
+      # skipped along with the job.
+      - name: Run acceptance tests
+        id: tests
+        continue-on-error: true
+        run: |
+          echo "Replace this with the command that runs your acceptance tests."
+
+      - name: Write Meridian evidence
+        if: always()
+        env:
+          # "met" when the tests passed, "failed" when they did not. Reporting
+          # a failure is as valuable as reporting a pass — a check that stops
+          # being met is what staleness and supersession are for.
+          STATUS: ${{ steps.tests.outcome == 'success' && 'met' || 'failed' }}
+        run: |
+          cat > meridian-evidence.json <<JSON
+          {
+            "schema": "meridian.evidence/v1",
+            "results": [
+              {
+                "requirement_id": "REQ-1042",
+                "statement": "Checkout rejects an expired card",
+                "status": "${STATUS}",
+                "evidence_type": "test_result",
+                "payload_ref": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+              }
+            ]
+          }
+          JSON
+          cat meridian-evidence.json
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: meridian-evidence
+          path: meridian-evidence.json
+          # Meridian can only ingest while somebody has the app open, so the
+          # retention window is the ingest deadline. The default is 90 days;
+          # do not lower it below the longest anyone goes without opening the
+          # app, or that evidence is lost with nothing to say so.
+          retention-days: 90
+
+# ── Fields ────────────────────────────────────────────────────────────────
+#
+# Required per result:
+#   status          met | failed | pending
+#   and either:
+#     check_id      the acceptance check's id, or
+#     requirement_id (or external_id, e.g. a Jira key) + the exact statement
+#   The check must be on a requirement of a node this repository is linked
+#   or path-mapped to in Meridian, or anything under one, or filed directly
+#   on a node above those up to the ecosystem (linked and mapped to nothing,
+#   any in the repository's ecosystem). A result naming a sibling application
+#   this repository is not linked or mapped to is refused.
+#
+# Optional:
+#   evidence_type   defaults to test_result. Only test_result, static_analysis
+#                   and trace reach the `repeatable` band. A value outside the
+#                   vocabulary is an error, not a downgrade — `test-result`
+#                   with a hyphen used to be accepted and quietly graded a band
+#                   weaker.
+#   payload_ref     ignored. Meridian always records this run's own URL.
+#   subject_sha     omit it. Meridian records the run's own head_sha, and
+#                   refuses a file that names a different one; a merge-queue
+#                   run naming its own commit is fine.
+#   allow_unmatched true to accept "no such check" quietly, for a pipeline that
+#                   reports checks which only exist on some branches.
+#
+# Limits: 500 results, 1 MiB unzipped.
+#
+# ── Generating the file ───────────────────────────────────────────────────
+#
+# Hand-written entries go stale. Better is to emit the JSON from the test run
+# itself, keyed on something already in the test — a tag, an annotation, or the
+# test name matching the check statement. Any language works; the file is the
+# only contract.

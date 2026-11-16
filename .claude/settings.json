@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-heredoc.js\"",
+            "timeout": 10,
+            "statusMessage": "Checking heredoc quoting"
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-commit-trailer.js\"",
+            "timeout": 10,
+            "statusMessage": "Checking the commit's requirement line"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Read|Edit|MultiEdit|Write|NotebookEdit|Grep|Glob|Bash|PowerShell|mcp__.*meridian.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/report-session-activity.js\"",
+            "timeout": 10,
+            "statusMessage": "Recording session activity"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/report-commit-tokens.js\"",
+            "timeout": 15,
+            "statusMessage": "Recording commit token cost"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/meridian-session-start.js\"",
+            "timeout": 10,
+            "statusMessage": "Looking for a Meridian card for this work"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/close-meridian-session.js\"",
+            "timeout": 15,
+            "statusMessage": "Closing Meridian session"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/close-meridian-session.js\"",
+            "timeout": 15,
+            "statusMessage": "Closing Meridian session"
+          }
+        ]
+      }
+    ]
+  }
+}
