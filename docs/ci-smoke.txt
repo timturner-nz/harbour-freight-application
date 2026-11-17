@@ -1,1 +1,0 @@
-CI smoke marker for REQ-1. Delete with REQ-1 once the evidence pipeline is proven.
