@@ -113,7 +113,6 @@ record `report_evidence` again against the merged `HEAD`.
 ## Working rules
 
 - Make the smallest correct change, inside the existing boundaries and patterns.
-- Before you write a helper that formats or parses something -- a date, a duration, a file size, a number -- search the shared code for an existing one (in a Flutter app that is `lib/shared/`) and use or extend it.
 - Do not silently change public contracts.
 - Name any risk in a change to schema, configuration, infrastructure, authentication or an outside integration early, and again in your summary.
 - Update tests when behaviour changes, and docs when domain behaviour, contracts, or operations change.
