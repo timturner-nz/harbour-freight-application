@@ -65,33 +65,46 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Your real test run goes here. Keep `id` and `continue-on-error` so the
-      # evidence step can report a failure as a failure rather than being
-      # skipped along with the job.
-      - name: Run acceptance tests
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      # Keep `id` and `continue-on-error` so a failing test run is still
+      # reported as a failure by the evidence step below.
+      - name: Run tests
         id: tests
         continue-on-error: true
-        run: |
-          echo "Replace this with the command that runs your acceptance tests."
+        run: flutter test
+
+      # Meridian evidence goes here. Emit one result per acceptance check
+      # (see "Fields" below), keyed on the check's exact statement, to
+      # meridian-evidence.json. Until a project has checks to report, the file
+      # holds an empty result list so the upload step still succeeds.
+      - name: Run CI smoke test (REQ-1)
+        id: smoke
+        continue-on-error: true
+        run: flutter test test/ci_smoke_test.dart
 
       - name: Write Meridian evidence
         if: always()
         env:
-          # "met" when the tests passed, "failed" when they did not. Reporting
-          # a failure is as valuable as reporting a pass — a check that stops
-          # being met is what staleness and supersession are for.
-          STATUS: ${{ steps.tests.outcome == 'success' && 'met' || 'failed' }}
+          SMOKE: ${{ steps.smoke.outcome == 'success' && 'met' || 'failed' }}
         run: |
           cat > meridian-evidence.json <<JSON
           {
             "schema": "meridian.evidence/v1",
             "results": [
               {
-                "requirement_id": "REQ-1042",
-                "statement": "Checkout rejects an expired card",
-                "status": "${STATUS}",
-                "evidence_type": "test_result",
-                "payload_ref": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                "requirement_id": "REQ-1",
+                "statement": "The CI smoke marker file docs/ci-smoke.txt exists and is not empty",
+                "status": "${SMOKE}",
+                "evidence_type": "test_result"
               }
             ]
           }
@@ -104,11 +117,11 @@ jobs:
         with:
           name: meridian-evidence
           path: meridian-evidence.json
-          # Meridian can only ingest while somebody has the app open, so the
-          # retention window is the ingest deadline. The default is 90 days;
-          # do not lower it below the longest anyone goes without opening the
-          # app, or that evidence is lost with nothing to say so.
           retention-days: 90
+
+      - name: Fail if tests failed
+        if: steps.tests.outcome != 'success'
+        run: exit 1
 
 # ── Fields ────────────────────────────────────────────────────────────────
 #
