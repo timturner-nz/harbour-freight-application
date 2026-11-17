@@ -121,3 +121,6 @@ app.*.symbols
 .idea/
 *.iml
 .vscode/settings.json
+
+# Personal Meridian agent connection (holds an access token)
+.mcp.json
