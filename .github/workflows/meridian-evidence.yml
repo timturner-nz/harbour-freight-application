@@ -83,18 +83,22 @@ jobs:
         continue-on-error: true
         run: flutter test
 
-      # Meridian evidence goes here. Emit one result per acceptance check
-      # (see "Fields" below), keyed on the check's exact statement, to
-      # meridian-evidence.json. Until a project has checks to report, the file
-      # holds an empty result list so the upload step still succeeds.
-      # Meridian evidence goes here. Emit one result per acceptance check
-      # (see "Fields" below), keyed on the check's exact statement, to
-      # meridian-evidence.json. Until a project has checks to report, the file
-      # holds an empty result list so the upload step still succeeds.
+      # REQ-1 smoke check. `continue-on-error` so the evidence step below can
+      # report a failure rather than the job stopping before it writes the file.
+      - name: Run CI smoke test
+        id: smoke
+        continue-on-error: true
+        run: flutter test test/ci_smoke_test.dart
+
+      # One result per acceptance check, keyed on the check's exact statement.
       - name: Write Meridian evidence
         if: always()
+        env:
+          SMOKE: ${{ steps.smoke.outcome == 'success' && 'met' || 'failed' }}
         run: |
-          echo '{"schema":"meridian.evidence/v1","results":[]}' > meridian-evidence.json
+          cat > meridian-evidence.json <<EOF
+          {"schema":"meridian.evidence/v1","results":[{"requirement_id":"REQ-1","statement":"The CI smoke marker file docs/ci-smoke.txt exists and is not empty","evidence_type":"test_result","status":"$SMOKE"}]}
+          EOF
           cat meridian-evidence.json
 
       - name: Upload evidence
