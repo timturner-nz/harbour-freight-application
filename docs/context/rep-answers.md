@@ -46,7 +46,8 @@ anything is built from it.
 | 2026-11-18 | Joanna Kopel | Aroha Williams | What the first version will do: F21, F22 (approved rules and project lead decisions only) | Sent 2026-11-18. Received 2026-11-18 (K1–K4). |
 | 2026-11-18 | Joanna Kopel | Aroha Williams | F16 (list order), F17 (enquiries left without action) | Sent 2026-11-18. Received 2026-11-18 (G1–G5). Neither settled. |
 | 2026-11-19 | Tim (tooling) | n/a | Meridian setup before slice 1 is built: F24–F27, with a progress report (initiative signed off, BR1 owner and risk set, REQ-5 to REQ-7 linked to BR1, plan on the workstream, data design drafted) | Sent 2026-11-19. Waiting. F27 overtaken: slice 1 was built with F24 and F25 still open (warnings, not blocks). |
-| 2026-11-19 | Tim (tooling) | n/a | Progress report on slice 1 (PR #10 open, REQ-5 to REQ-7 Built, 85/85 tests, 6 deliberate breaks recorded, #8 and #9 explained), with F28–F30 and reminders of F24 and F25 | Sent 2026-11-19. Waiting. |
+| 2026-11-19 | Tim (tooling) | n/a | Progress report on slice 1 (PR #10 open, REQ-5 to REQ-7 Built, 85/85 tests, 6 deliberate breaks recorded, #8 and #9 explained), with F28–F30 and reminders of F24 and F25 | Sent 2026-11-19. Waiting. F28 since settled by the project lead. |
+| 2026-11-19 | Tim (tooling) | n/a | PR #10 ready for review: what it does, how we know it works (85/85 tests, 6 deliberate breaks, manual check passed), the migration 3 backup warning, F28 settled, reminders of F24, F25, F29 and F30 | Sent 2026-11-19. Waiting. |
 
 Held back for later: test users and roles (Tim); one PC or a shared database
 location (Hemi); day-to-day handling of enquiries (Sam, Priya, Tane).
