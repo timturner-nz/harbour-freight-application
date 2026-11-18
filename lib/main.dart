@@ -7,6 +7,8 @@ import 'src/features/auth/data/user_repository.dart';
 import 'src/features/auth/domain/auth_service.dart';
 import 'src/features/auth/domain/password_hasher.dart';
 import 'src/features/auth/presentation/auth_controller.dart';
+import 'src/features/enquiries/data/enquiry_repository.dart';
+import 'src/features/enquiries/domain/enquiry_service.dart';
 
 /// Composition root: the one place where concrete dependencies are wired up.
 Future<void> main() async {
@@ -19,5 +21,6 @@ Future<void> main() async {
   runApp(HarbourFreightApp(
     auth: AuthController(AuthService(users: users, hasher: hasher)),
     userAdmin: UserAdminService(users: users, hasher: hasher),
+    enquiries: EnquiryService(enquiries: SqliteEnquiryRepository(db)),
   ));
 }
