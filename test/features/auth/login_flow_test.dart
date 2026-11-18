@@ -14,7 +14,7 @@ void main() {
     expect(find.byKey(const Key('login-submit')), findsOneWidget);
 
     await signIn(tester, 'alice', 'pw');
-    expect(find.text('Welcome to Harbour Freight'), findsOneWidget);
+    expect(find.byKey(const Key('new-enquiry')), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('sign-out')));
     await tester.pump();
@@ -31,6 +31,6 @@ void main() {
     await signIn(tester, 'alice', 'nope');
 
     expect(find.byKey(const Key('login-error')), findsOneWidget);
-    expect(find.text('Welcome to Harbour Freight'), findsNothing);
+    expect(find.byKey(const Key('new-enquiry')), findsNothing);
   });
 }

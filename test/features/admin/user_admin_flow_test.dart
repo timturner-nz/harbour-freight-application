@@ -11,7 +11,7 @@ void main() {
 
     await signIn(tester, 'alice', 'pw');
 
-    expect(find.text('Welcome to Harbour Freight'), findsOneWidget);
+    expect(find.byKey(const Key('new-enquiry')), findsOneWidget);
     expect(find.byKey(const Key('open-users')), findsNothing);
   });
 
