@@ -201,6 +201,11 @@ accepted, the real app is run on Windows against a real database file:
 Screenshots of steps 3 to 5 go with the evidence. This is supporting
 evidence. It does not replace the automated checks.
 
+**Done 2026-11-19 by the project lead, on commit `1639bf0`: all steps
+passed.** No database existed on this PC, so step 1 did not apply and the
+first run created a fresh one; the upgrade is proved by check 1.9 only. No
+screenshots were taken. Recorded on the workstream's discussion in Meridian.
+
 ## Accepting the slice
 
 **Accept** when all of these are true:

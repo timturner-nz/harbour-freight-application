@@ -246,7 +246,7 @@ project lead decisions only, and asked:
 | F25 | Tim (sent 2026-11-19, reminded 2026-11-19) | BR1 needs one validation check at Medium risk. Should the project lead write it, or QA? Suggested wording was offered. | BR1 risk, Medium (set 2026-11-19) |
 | F26 | Tim (sent 2026-11-19) | BR1 shows "No priority" in Meridian, but the IT meeting notes jotted Must. It will be set to Must unless Tim objects. | IT meeting notes (BR1) |
 | F27 | Tim (sent 2026-11-19). **Overtaken**: slice 1 was built while F24 and F25 were open, and Tim was told. | Can slice 1 building start while F24 and F25 are still open? Meridian shows them as warnings, not blocks. | Meridian's ready-to-build warnings |
-| F28 | Tim (sent 2026-11-19) | `flutter build windows` stops with "Building with plugins requires symlink support" on this PC. Is it OK to turn on Windows Developer Mode, or should the manual check run on another machine? | Plan step 6 (manual check) |
+| F28 | Tim (sent 2026-11-19). **Settled by the project lead**: Developer Mode turned on on this PC on 2026-11-19, and the manual check ran here. Tim can still say if another machine should be used. | `flutter build windows` stops with "Building with plugins requires symlink support" on this PC. Is it OK to turn on Windows Developer Mode, or should the manual check run on another machine? | Plan step 6 (manual check) |
 | F29 | Tim (sent 2026-11-19) | Who reviews the Security review Meridian suggested after REQ-6? Nobody is named. | Meridian workstream review |
 | F30 | Tim (sent 2026-11-19) | `meridian-evidence.yml` still writes an empty result list. Wire the test results into it, or leave CI as it is for now? | Evidence plan |
 
