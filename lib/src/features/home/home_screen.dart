@@ -8,8 +8,12 @@ import '../enquiries/domain/enquiry.dart';
 import '../enquiries/domain/enquiry_service.dart';
 import '../enquiries/presentation/enquiry_form_controller.dart';
 import '../enquiries/presentation/enquiry_form_screen.dart';
+import '../enquiries/presentation/enquiry_list_controller.dart';
+import '../enquiries/presentation/enquiry_list_view.dart';
 
-class HomeScreen extends StatelessWidget {
+/// After signing in: every enquiry, newest first, and the New enquiry action
+/// (REQ-5, REQ-6).
+class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
     required this.auth,
@@ -21,25 +25,49 @@ class HomeScreen extends StatelessWidget {
   final UserAdminService userAdmin;
   final EnquiryService enquiries;
 
-  void _openUsers(BuildContext context) {
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late final _list =
+      EnquiryListController(widget.enquiries, widget.auth.currentUser!);
+
+  @override
+  void initState() {
+    super.initState();
+    _list.load(0);
+  }
+
+  @override
+  void dispose() {
+    _list.dispose();
+    super.dispose();
+  }
+
+  void _openUsers() {
     Navigator.of(context).push(MaterialPageRoute<void>(
       builder: (_) => UserAdminScreen(
-        controller: UserAdminController(userAdmin, auth.currentUser!),
+        controller:
+            UserAdminController(widget.userAdmin, widget.auth.currentUser!),
       ),
     ));
   }
 
-  Future<Enquiry?> _newEnquiry(BuildContext context) {
-    return Navigator.of(context).push(MaterialPageRoute<Enquiry>(
+  Future<void> _newEnquiry() async {
+    final saved = await Navigator.of(context).push(MaterialPageRoute<Enquiry>(
       builder: (_) => EnquiryFormScreen(
-        controller: EnquiryFormController(enquiries, auth.currentUser!),
+        controller:
+            EnquiryFormController(widget.enquiries, widget.auth.currentUser!),
       ),
     ));
+    // A saved enquiry shows at the top of the first page straight away.
+    if (saved != null && mounted) await _list.showNewest();
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = auth.currentUser;
+    final user = widget.auth.currentUser;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Harbour Freight'),
@@ -47,7 +75,7 @@ class HomeScreen extends StatelessWidget {
           if (user != null && user.isAdmin)
             TextButton.icon(
               key: const Key('open-users'),
-              onPressed: () => _openUsers(context),
+              onPressed: _openUsers,
               icon: const Icon(Icons.group),
               label: const Text('Users'),
             ),
@@ -56,7 +84,7 @@ class HomeScreen extends StatelessWidget {
             key: const Key('sign-out'),
             tooltip: 'Sign out',
             icon: const Icon(Icons.logout),
-            onPressed: auth.signOut,
+            onPressed: widget.auth.signOut,
           ),
         ],
       ),
@@ -72,16 +100,14 @@ class HomeScreen extends StatelessWidget {
                 const Spacer(),
                 FilledButton.icon(
                   key: const Key('new-enquiry'),
-                  onPressed: () => _newEnquiry(context),
+                  onPressed: _newEnquiry,
                   icon: const Icon(Icons.add),
                   label: const Text('New enquiry'),
                 ),
               ],
             ),
           ),
-          const Expanded(
-            child: Center(child: Text('Welcome to Harbour Freight')),
-          ),
+          Expanded(child: EnquiryListView(controller: _list)),
         ],
       ),
     );
