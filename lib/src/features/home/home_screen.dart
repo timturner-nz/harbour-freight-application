@@ -6,6 +6,7 @@ import '../admin/presentation/user_admin_screen.dart';
 import '../auth/presentation/auth_controller.dart';
 import '../enquiries/domain/enquiry.dart';
 import '../enquiries/domain/enquiry_service.dart';
+import '../enquiries/presentation/enquiry_detail_screen.dart';
 import '../enquiries/presentation/enquiry_form_controller.dart';
 import '../enquiries/presentation/enquiry_form_screen.dart';
 import '../enquiries/presentation/enquiry_list_controller.dart';
@@ -65,6 +66,17 @@ class _HomeScreenState extends State<HomeScreen> {
     if (saved != null && mounted) await _list.showNewest();
   }
 
+  // Opens on top of the list; going back returns to the same page (REQ-7).
+  void _openEnquiry(Enquiry enquiry) {
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => EnquiryDetailScreen(
+        service: widget.enquiries,
+        actor: widget.auth.currentUser!,
+        enquiryId: enquiry.id,
+      ),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = widget.auth.currentUser;
@@ -107,7 +119,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          Expanded(child: EnquiryListView(controller: _list)),
+          Expanded(
+            child: EnquiryListView(controller: _list, onOpen: _openEnquiry),
+          ),
         ],
       ),
     );
