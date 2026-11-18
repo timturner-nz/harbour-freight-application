@@ -45,7 +45,8 @@ anything is built from it.
 | 2026-11-18 | Tim (tooling) | n/a | F8, F15 | Sent 2026-11-18. Received 2026-11-18 (T1–T4). F15 answered. F8 redirected to the Sales Manager. |
 | 2026-11-18 | Joanna Kopel | Aroha Williams | What the first version will do: F21, F22 (approved rules and project lead decisions only) | Sent 2026-11-18. Received 2026-11-18 (K1–K4). |
 | 2026-11-18 | Joanna Kopel | Aroha Williams | F16 (list order), F17 (enquiries left without action) | Sent 2026-11-18. Received 2026-11-18 (G1–G5). Neither settled. |
-| 2026-11-19 | Tim (tooling) | n/a | Meridian setup before slice 1 is built: F24–F27, with a progress report (initiative signed off, BR1 owner and risk set, REQ-5 to REQ-7 linked to BR1, plan on the workstream, data design drafted) | Sent 2026-11-19. Waiting. |
+| 2026-11-19 | Tim (tooling) | n/a | Meridian setup before slice 1 is built: F24–F27, with a progress report (initiative signed off, BR1 owner and risk set, REQ-5 to REQ-7 linked to BR1, plan on the workstream, data design drafted) | Sent 2026-11-19. Waiting. F27 overtaken: slice 1 was built with F24 and F25 still open (warnings, not blocks). |
+| 2026-11-19 | Tim (tooling) | n/a | Progress report on slice 1 (PR #10 open, REQ-5 to REQ-7 Built, 85/85 tests, 6 deliberate breaks recorded, #8 and #9 explained), with F28–F30 and reminders of F24 and F25 | Sent 2026-11-19. Waiting. |
 
 Held back for later: test users and roles (Tim); one PC or a shared database
 location (Hemi); day-to-day handling of enquiries (Sam, Priya, Tane).
@@ -241,10 +242,13 @@ project lead decisions only, and asked:
 | ID | For | Question | Arises from |
 |---|---|---|---|
 | F23 | Aroha (not yet sent) | When does the campaign start? | K4, L5 |
-| F24 | Tim (sent 2026-11-19) | Please name a QA person on the Enquiry Tracker initiative or the slice 1 workstream (a workspace admin's step in Meridian). | Meridian's ready-to-build warning on BR1 |
-| F25 | Tim (sent 2026-11-19) | BR1 needs one validation check at Medium risk. Should the project lead write it, or QA? Suggested wording was offered. | BR1 risk, Medium (set 2026-11-19) |
+| F24 | Tim (sent 2026-11-19, reminded 2026-11-19) | Please name a QA person on the Enquiry Tracker initiative or the slice 1 workstream (a workspace admin's step in Meridian). | Meridian's ready-to-build warning on BR1 |
+| F25 | Tim (sent 2026-11-19, reminded 2026-11-19) | BR1 needs one validation check at Medium risk. Should the project lead write it, or QA? Suggested wording was offered. | BR1 risk, Medium (set 2026-11-19) |
 | F26 | Tim (sent 2026-11-19) | BR1 shows "No priority" in Meridian, but the IT meeting notes jotted Must. It will be set to Must unless Tim objects. | IT meeting notes (BR1) |
-| F27 | Tim (sent 2026-11-19) | Can slice 1 building start while F24 and F25 are still open? Meridian shows them as warnings, not blocks. | Meridian's ready-to-build warnings |
+| F27 | Tim (sent 2026-11-19). **Overtaken**: slice 1 was built while F24 and F25 were open, and Tim was told. | Can slice 1 building start while F24 and F25 are still open? Meridian shows them as warnings, not blocks. | Meridian's ready-to-build warnings |
+| F28 | Tim (sent 2026-11-19) | `flutter build windows` stops with "Building with plugins requires symlink support" on this PC. Is it OK to turn on Windows Developer Mode, or should the manual check run on another machine? | Plan step 6 (manual check) |
+| F29 | Tim (sent 2026-11-19) | Who reviews the Security review Meridian suggested after REQ-6? Nobody is named. | Meridian workstream review |
+| F30 | Tim (sent 2026-11-19) | `meridian-evidence.yml` still writes an empty result list. Wire the test results into it, or leave CI as it is for now? | Evidence plan |
 
 #### The mock-up (`docs/context/mockup-image.png`)
 
